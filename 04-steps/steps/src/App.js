@@ -8,6 +8,7 @@ const messages = [
 
 function App() {
     const [step, setStep] = useState(1);
+    const [isOpen, setIsOpen] = useState(true);
 
     useEffect(() => {
         setStep(1);
@@ -27,20 +28,27 @@ function App() {
         }
     }
 
-    return <div className="steps">
-        <div className="numbers">
-            {[1, 2, 3].map(number => <Step number={number} step={step} onClick={() => handleStepChange(number)} />)}
-        </div>
+    return (
+        <>
+            <button className="close" onClick={() => setIsOpen(!isOpen)}>&times;</button>
+            {isOpen &&
+                (<div className="steps">
+                    <div className="numbers">
+                        {[1, 2, 3].map(number => <Step number={number} step={step} onClick={() => handleStepChange(number)} />)}
+                    </div>
 
-        <p className="message">
-            Step {step}: {messages[step - 1]}
-        </p>
+                    <p className="message">
+                        Step {step}: {messages[step - 1]}
+                    </p>
 
-        <p className="buttons">
-            <Button title="Previous" onClick={() => handleStepChange('previous')} />
-            <Button title="Next" onClick={() => handleStepChange('next')} />
-        </p>
-    </div>
+                    <p className="buttons">
+                        <Button title="Previous" onClick={() => handleStepChange('previous')} />
+                        <Button title="Next" onClick={() => handleStepChange('next')} />
+                    </p>
+                </div>)
+            }
+        </>
+    )
 }
 
 function Button({ title, onClick }) {
@@ -50,7 +58,7 @@ function Button({ title, onClick }) {
 }
 
 function Step({ number, step, onClick }) {
-    return <div className={number === step ? 'active' : ''} onClick={onClick}>
+    return <div className={number <= step ? 'active' : ''} onClick={onClick}>
         {number}
     </div>
 }
