@@ -34,7 +34,7 @@ function App() {
             {isOpen &&
                 (<div className="steps">
                     <div className="numbers">
-                        {[1, 2, 3].map(number => <Step number={number} step={step} onClick={() => handleStepChange(number)} />)}
+                        {[1, 2, 3].map(number => <Step number={number} step={step} onClick={() => handleStepChange(number)} key={number} />)}
                     </div>
 
                     <p className="message">
