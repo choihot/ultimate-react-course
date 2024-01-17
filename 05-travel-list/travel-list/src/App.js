@@ -71,11 +71,11 @@ function Item({ description, quantity, packed, id, onDeleteItem, onCheckItem }) 
   )
 }
 
-function Stats() {
+function Stats({ numOfItems, numOfPackedItems, percentage }) {
   return (
     <footer className="stats">
       <em>
-        💼 You have X items on your list, and you already packed X (X%)
+        💼 You have {numOfItems} items on your list, and you already packed {numOfPackedItems} ({percentage}%)
       </em>
     </footer>
   )
@@ -97,6 +97,14 @@ export default function App() {
     }));
   }
 
+  const numOfItems = items.reduce((acc, item) => {
+    return acc + item.quantity;
+  }, 0);
+  const numOfPackedItems = items.filter(item => item.packed).reduce((acc, item) => {
+    return acc + item.quantity;
+  }, 0);
+  const percentage = numOfItems ? Math.floor(numOfPackedItems / numOfItems * 100) : 0;
+
   return (
     <div className="app">
       <Logo />
@@ -106,7 +114,11 @@ export default function App() {
         onDeleteItem={handleDeleteItem}
         onCheckItem={handleCheckItem}
       />
-      <Stats />
+      <Stats
+        numOfItems={numOfItems}
+        numOfPackedItems={numOfPackedItems}
+        percentage={percentage}
+      />
     </div>
   )
 }
