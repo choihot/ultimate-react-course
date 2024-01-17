@@ -71,11 +71,25 @@ function Item({ description, quantity, packed, id, onDeleteItem, onCheckItem }) 
   )
 }
 
-function Stats({ numOfItems, numOfPackedItems, percentage }) {
+function Stats({ items }) {
+  if (!items.length) return (
+    <footer className="stats">
+      <em>📝 Start adding some items to your packing list.🚀</em>
+    </footer>
+  )
+
+  const numOfItems = items.length
+  const numOfPackedItems = items.filter(item => item.packed).length;
+  const percentage = Math.round(numOfPackedItems / numOfItems * 100);
+
   return (
     <footer className="stats">
       <em>
-        💼 You have {numOfItems} items on your list, and you already packed {numOfPackedItems} ({percentage}%)
+        {
+          percentage === 100 ?
+            '🎉 Good job! You are ready to go! ✈️' :
+            `💼 You have ${numOfItems} items on your list, and you already packed ${numOfPackedItems} (${percentage}%)`
+        }
       </em>
     </footer>
   )
@@ -97,14 +111,6 @@ export default function App() {
     }));
   }
 
-  const numOfItems = items.reduce((acc, item) => {
-    return acc + item.quantity;
-  }, 0);
-  const numOfPackedItems = items.filter(item => item.packed).reduce((acc, item) => {
-    return acc + item.quantity;
-  }, 0);
-  const percentage = numOfItems ? Math.floor(numOfPackedItems / numOfItems * 100) : 0;
-
   return (
     <div className="app">
       <Logo />
@@ -115,9 +121,7 @@ export default function App() {
         onCheckItem={handleCheckItem}
       />
       <Stats
-        numOfItems={numOfItems}
-        numOfPackedItems={numOfPackedItems}
-        percentage={percentage}
+        items={items}
       />
     </div>
   )
