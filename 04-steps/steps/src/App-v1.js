@@ -42,20 +42,8 @@ function App() {
                     </p>
 
                     <p className="buttons">
-                        <Button
-                            onClick={() => handleStepChange('previous')}
-                            bgColor="#7950f2"
-                            textColor="#fff"
-                        >
-                            <span>👈</span> Previous
-                        </Button>
-                        <Button
-                            onClick={() => handleStepChange('next')}
-                            bgColor="#7950f2"
-                            textColor="#fff"
-                        >
-                            <span>👉</span> Next
-                        </Button>
+                        <Button title="Previous" onClick={() => handleStepChange('previous')} />
+                        <Button title="Next" onClick={() => handleStepChange('next')} />
                     </p>
                 </div>)
             }
@@ -63,9 +51,9 @@ function App() {
     )
 }
 
-function Button({ onClick, textColor, bgColor, children }) {
-    return <button style={{ backgroundColor: bgColor, color: textColor }} onClick={onClick}>
-        {children}
+function Button({ title, onClick }) {
+    return <button style={{ backgroundColor: '#7950f2', color: '#fff' }} onClick={onClick}>
+        {title}
     </button>
 }
 
