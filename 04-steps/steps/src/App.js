@@ -38,7 +38,9 @@ function App() {
                     </div>
 
                     <p className="message">
-                        Step {step}: {messages[step - 1]}
+                        <StepMessage step={step}>
+                            {messages[step - 1]}
+                        </StepMessage>
                     </p>
 
                     <p className="buttons">
@@ -73,6 +75,13 @@ function Step({ number, step, onClick }) {
     return <div className={number <= step ? 'active' : ''} onClick={onClick}>
         {number}
     </div>
+}
+
+function StepMessage({ step, children }) {
+    return (<div className="message">
+        <h3> Step {step}: </h3>
+        {children}
+    </div>)
 }
 
 export default App;
