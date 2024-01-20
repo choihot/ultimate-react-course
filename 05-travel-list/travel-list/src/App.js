@@ -50,14 +50,37 @@ function Form({ items, setItems }) {
 }
 
 function PackingList({ items, onDeleteItem, onCheckItem }) {
+  const [sortBy, setSortBy] = useState('input');
+
+  let sortedItems = [];
+
+  if (sortBy === 'input') sortedItems = items;
+  if (sortBy === 'description') {
+    sortedItems = items.slice().sort((a, b) => {
+      return a.description.localeCompare(b.description)
+    })
+  }
+
+  if (sortBy === 'packed') {
+    sortedItems = items.slice().sort((a, b) => {
+      return Number(a.packed) - Number(b.packed)
+    })
+  }
+
   return (
     <div className="list">
       <ul>
-        {items.map((item) => (
+        {sortedItems.map((item) => (
           <Item {...item} onDeleteItem={onDeleteItem} onCheckItem={onCheckItem} key={item.id} />
         ))}
       </ul>
+      <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="actions">
+        <option value="input">Sort by input orders</option>
+        <option value="description">Sort by description alpha</option>
+        <option value="packed">Sort by packed status</option>
+      </select>
     </div>
+
   )
 }
 
