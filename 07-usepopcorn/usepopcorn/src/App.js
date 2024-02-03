@@ -50,12 +50,11 @@ const tempWatchedData = [
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-const NavBar = ({ movies }) => {
+const NavBar = ({ children }) => {
   return (
     <nav className="nav-bar">
       <Logo />
-      <SearchBar />
-      <SearchStats movies={movies} />
+      {children}
     </nav>
   )
 }
@@ -90,7 +89,7 @@ const SearchStats = ({ movies }) => {
   )
 }
 
-const MoviesBox = ({ movies }) => {
+const ListBox = ({ children }) => {
   const [isOpen1, setIsOpen1] = useState(true);
   return (
     <div className="box">
@@ -100,23 +99,27 @@ const MoviesBox = ({ movies }) => {
       >
         {isOpen1 ? "–" : "+"}
       </button>
-      {isOpen1 && (
-        <ul className="list">
-          {movies?.map((movie) => (
-            <li key={movie.imdbID}>
-              <img src={movie.Poster} alt={`${movie.Title} poster`} />
-              <h3>{movie.Title}</h3>
-              <div>
-                <p>
-                  <span>🗓</span>
-                  <span>{movie.Year}</span>
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+      {isOpen1 && children}
     </div>
+  )
+}
+
+const MoviesList = ({ movies }) => {
+  return (
+    <ul className="list">
+      {movies?.map((movie) => (
+        <li key={movie.imdbID}>
+          <img src={movie.Poster} alt={`${movie.Title} poster`} />
+          <h3>{movie.Title}</h3>
+          <div>
+            <p>
+              <span>🗓</span>
+              <span>{movie.Year}</span>
+            </p>
+          </div>
+        </li>
+      ))}
+    </ul>
   )
 }
 
@@ -198,15 +201,28 @@ const WatchedStats = ({ watched }) => {
     </div>
   )
 }
+
+const Main = ({ children }) => {
+  return (
+    <main className="main">
+      {children}
+    </main>
+  )
+}
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   return (
     <>
-      <NavBar movies={movies} />
-      <main className="main">
-        <MoviesBox movies={movies} />
+      <NavBar>
+        <SearchBar />
+        <SearchStats movies={movies} />
+      </NavBar>
+      <Main>
+        <ListBox>
+          <MoviesList movies={movies} />
+        </ListBox>
         <WatchedMoviesBox movies={movies} />
-      </main>
+      </Main>
     </>
   );
 }
