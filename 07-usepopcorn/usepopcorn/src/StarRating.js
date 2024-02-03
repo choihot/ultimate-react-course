@@ -17,8 +17,14 @@ const textStyle = {
 
 export default function StarRating({ maxRating = 5 }) {
     const [rating, setRating] = useState(1);
+    const [tempRating, setTempRating] = useState(0);
+
     const handleRating = (rating) => {
         setRating(rating);
+    }
+
+    const handleHover = (rating) => {
+        setTempRating(rating);
     }
 
     return (
@@ -26,11 +32,18 @@ export default function StarRating({ maxRating = 5 }) {
             <div style={starContainerStyle}>
                 {Array(maxRating).fill().map((_, index) => {
                     return (
-                        <Star key={index} onRate={() => handleRating(index + 1)} isFull={rating >= index + 1} />
+                        <Star
+                            key={index}
+                            onRate={() => handleRating(index + 1)}
+                            onMouseEnter={() => handleHover(index + 1)}
+                            onMouseLeave={() => handleHover(0)}
+                            isFull={rating >= index + 1}
+                            isHovered={tempRating >= index + 1}
+                        />
                     )
                 })}
             </div>
-            <p style={textStyle}>{rating || ""}</p>
+            <p style={textStyle}>{tempRating || rating || ""}</p>
         </div>
     )
 }
@@ -42,10 +55,15 @@ const starStyle = {
     cursor: 'pointer'
 }
 
-const Star = ({ onRate, isFull }) => {
+const Star = ({ onRate, onMouseEnter, onMouseLeave, isFull, isHovered }) => {
     return (
-        <span role="button" onClick={onRate} style={starStyle}>
-            {isFull ? (<svg
+        <span role="button"
+            onClick={onRate}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            style={starStyle}
+        >
+            {(isFull || isHovered) ? (<svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="#000"
