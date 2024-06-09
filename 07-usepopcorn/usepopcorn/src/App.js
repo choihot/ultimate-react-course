@@ -201,28 +201,48 @@ export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchMovies = async () => {
       setIsLoading(true);
-      await fetch(OMDB_API_URL)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.Search) {
-            setMovies(data.Search);
-            console.log(data.Search)
-          }
+      try {
+        const res = await fetch(OMDB_API_URL).catch(_ => {
+          throw new Error("Network response was not ok");
         })
-        .catch((err) => console.error(err))
-        .finally(() => setIsLoading(false));
-    }
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await res.json();
+        if (data.Response === "False" && data.Error) {
+          throw new Error(data.Error);
+        }
+        if (data.Search) {
+          setMovies(data.Search);
+        }
+      } catch (err) {
+        console.error(err.message);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchMovies();
-  }, [])
+  }, []);
 
   const Loader = () => {
     return (
       <p className="loader">
         Loading...
+      </p>
+    )
+  }
+
+  const ErrorCmp = ({ message }) => {
+    return (
+      <p className="error">
+        <span>⛔️</span> {message}
       </p>
     )
   }
@@ -236,7 +256,13 @@ export default function App() {
       <Main>
         <Box>
           {
-            isLoading ? <Loader /> : <MoviesList movies={movies} />
+            isLoading && <Loader />
+          }
+          {
+            !isLoading && !error && <MoviesList movies={movies} />
+          }
+          {
+            error && <ErrorCmp message={error} />
           }
         </Box>
         <Box>
