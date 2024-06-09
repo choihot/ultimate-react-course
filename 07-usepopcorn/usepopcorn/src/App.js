@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const tempMovieData = [
   {
@@ -84,7 +84,7 @@ const SearchBar = () => {
 const SearchStats = ({ movies }) => {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      Found <strong>{Array.isArray(movies) ? movies.length : 0}</strong> results
     </p>
   )
 }
@@ -189,14 +189,43 @@ const WatchedMovieList = ({ watched }) => {
   return (
     <ul className="list">
       {watched.map((movie) => (
-        <WatchedMovie movie={movie} />
+        <WatchedMovie movie={movie} key={movie.imdbID} />
       ))}
     </ul>
   )
 }
+
+const OMDB_API_URL = "http://www.omdbapi.com/?apikey=19f6b303&S=batman";
+
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      setIsLoading(true);
+      await fetch(OMDB_API_URL)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.Search) {
+            setMovies(data.Search);
+            console.log(data.Search)
+          }
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setIsLoading(false));
+    }
+    fetchMovies();
+  }, [])
+
+  const Loader = () => {
+    return (
+      <p className="loader">
+        Loading...
+      </p>
+    )
+  }
 
   return (
     <>
@@ -206,7 +235,9 @@ export default function App() {
       </NavBar>
       <Main>
         <Box>
-          <MoviesList movies={movies} />
+          {
+            isLoading ? <Loader /> : <MoviesList movies={movies} />
+          }
         </Box>
         <Box>
           <WatchedStats watched={watched} />
