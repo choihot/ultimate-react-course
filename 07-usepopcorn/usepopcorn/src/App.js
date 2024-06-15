@@ -68,8 +68,10 @@ const Logo = () => {
   )
 }
 
-const SearchBar = () => {
-  const [query, setQuery] = useState("");
+const SearchBar = ({
+  query,
+  setQuery
+}) => {
   return (
     <input
       className="search"
@@ -195,19 +197,35 @@ const WatchedMovieList = ({ watched }) => {
   )
 }
 
-const OMDB_API_URL = "http://www.omdbapi.com/?apikey=19f6b303&S=batman";
+const Loader = () => {
+  return (
+    <p className="loader">
+      Loading...
+    </p>
+  )
+}
+
+const ErrorCmp = ({ message }) => {
+  return (
+    <p className="error">
+      <span>⛔️</span> {message}
+    </p>
+  )
+}
 
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [query, setQuery] = useState("inception");
 
   useEffect(() => {
     const fetchMovies = async () => {
       setIsLoading(true);
+      setError('');
       try {
-        const res = await fetch(OMDB_API_URL).catch(_ => {
+        const res = await fetch(`http://www.omdbapi.com/?apikey=19f6b303&S=${query}`).catch(_ => {
           throw new Error("Network response was not ok");
         })
         if (!res.ok) {
@@ -216,7 +234,7 @@ export default function App() {
 
         const data = await res.json();
         if (data.Response === "False" && data.Error) {
-          throw new Error(data.Error);
+          throw new Error("No results found or too many results. Please refine your search.");
         }
         if (data.Search) {
           setMovies(data.Search);
@@ -228,29 +246,20 @@ export default function App() {
         setIsLoading(false);
       }
     };
+
+    if (!query) {
+      setMovies([]);
+      setIsLoading(false);
+      return;
+    }
+
     fetchMovies();
-  }, []);
-
-  const Loader = () => {
-    return (
-      <p className="loader">
-        Loading...
-      </p>
-    )
-  }
-
-  const ErrorCmp = ({ message }) => {
-    return (
-      <p className="error">
-        <span>⛔️</span> {message}
-      </p>
-    )
-  }
+  }, [query]);
 
   return (
     <>
       <NavBar>
-        <SearchBar />
+        <SearchBar query={query} setQuery={setQuery} />
         <SearchStats movies={movies} />
       </NavBar>
       <Main>
