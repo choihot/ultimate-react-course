@@ -276,6 +276,10 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddToWatched, watched }) => 
     fetchMovieDetails()
   }, [selectedId])
 
+  useEffect(() => {
+    document.title = title ? `${title} - usePopcorn` : "usePopcorn";
+  }, [title])
+
   return (
     <div className="details">
       {
