@@ -278,6 +278,11 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddToWatched, watched }) => 
 
   useEffect(() => {
     document.title = title ? `${title} - usePopcorn` : "usePopcorn";
+
+    return () => {
+      document.title = "usePopcorn";
+      console.log(`Cleanup: ${title} - usePopcorn`);
+    }
   }, [title])
 
   return (
