@@ -366,11 +366,14 @@ export default function App() {
   }
 
   useEffect(() => {
+    const controller = new AbortController();
     const fetchMovies = async () => {
-      setIsLoading(true);
-      setError('');
       try {
-        const res = await fetch(`http://www.omdbapi.com/?apikey=19f6b303&S=${query}`).catch(_ => {
+        setIsLoading(true);
+        setError('');
+        const res = await fetch(`http://www.omdbapi.com/?apikey=19f6b303&S=${query}`,
+          { signal: controller.signal }
+        ).catch(_ => {
           throw new Error("Network response was not ok");
         })
         if (!res.ok) {
@@ -386,7 +389,10 @@ export default function App() {
         }
       } catch (err) {
         console.error(err.message);
-        setError(err.message);
+        if (err.name !== 'AbortError') {
+          // Only set error if it's not an abort error
+          setError(err.message);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -399,6 +405,10 @@ export default function App() {
     }
 
     fetchMovies();
+
+    return () => {
+      controller.abort();
+    }
   }, [query]);
 
   return (
